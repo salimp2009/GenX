@@ -155,6 +155,7 @@
     <ClCompile Include="RayTracing_OneWeekend.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ray.hpp" />
     <ClInclude Include="vec3.hpp" />
   </ItemGroup>
   <ItemGroup>
