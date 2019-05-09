@@ -55,8 +55,28 @@ void ppm_test()
 	ost.close();
 }
 
+// Sphere Equation; sphere center is at (cx,cy,cz)
+// Equation to check if(x,y,z) is on the sphere;
+// (x-cx)*(x-cx)+(y-cy)*(y-cy)+(z-cz)*(z-cz)=R*R 
+// (x,y,z) is any point 
+// (cx, cy,cz) is C, center of sphere 
+// R is the radius of sphere
+// Solving dot((p-c), (p-c))=R*R; equation to check if the ray hits the sphere in vector form
+// p(t)= A+t*B; ray equation
+bool hit_sphere(const Vec3& center, float radius, const Ray& r) 
+{
+	Vec3 oc = r.origin() - center;							// A-C; A is the origin of the ray, C is the center of sphere
+	float a = dot(r.direction(), r.direction());			// dot(B, B); B=r.direction()
+	float b = 2 * dot(oc, r.direction());					// dot(B, A-C) in original formula but here it is dot(A-C, B) which are equal
+	float c = dot(oc, oc)-radius*radius;					// dot(A-C, A-C)-R*R; R is the radius
+	float discriminant = b * b - 4 * a * c;					// if the above hit_sphere equation will be solved for t;
+	return (discriminant > 0);								// discriminant has to be positive to have real roots
+}
+
 Vec3 color(const Ray& r)
 {
+	if (hit_sphere(Vec3{ 0.0f, 0.0f, -1.0f }, 0.5f, r))		// creating red sphere with a radius of 0.55
+		return Vec3{ 1.0f, 0.0f, 0.0f };					// return color red
 	Vec3 unit_direction = unit_vector(r.direction());
 	float t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
