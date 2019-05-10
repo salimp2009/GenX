@@ -63,22 +63,36 @@ void ppm_test()
 // R is the radius of sphere
 // Solving dot((p-c), (p-c))=R*R; equation to check if the ray hits the sphere in vector form
 // p(t)= A+t*B; ray equation
-bool hit_sphere(const Vec3& center, float radius, const Ray& r) 
+// Solving the equation for unknown t; t*t*dot(B,B)+2*t*dot(B,A-C)+dot(A-C,A-C)-R*R =0
+float hit_sphere(const Vec3& center, float radius, const Ray& r) 
 {
 	Vec3 oc = r.origin() - center;							// A-C; A is the origin of the ray, C is the center of sphere
 	float a = dot(r.direction(), r.direction());			// dot(B, B); B=r.direction()
 	float b = 2 * dot(oc, r.direction());					// dot(B, A-C) in original formula but here it is dot(A-C, B) which are equal
 	float c = dot(oc, oc)-radius*radius;					// dot(A-C, A-C)-R*R; R is the radius
-	float discriminant = b * b - 4 * a * c;					// if the above hit_sphere equation will be solved for t;
-	return (discriminant > 0);								// discriminant has to be positive to have real roots
+	float discriminant = b * b - 4 * a * c;					// if the above hit_sphere equation will be solved for t; // discriminant has to be positive to have real roots
+	if (discriminant < 0) {		
+		return -1.0f;										// condition if no real roots; the color of the sphere will be blue-white gradient
+	}
+	else 
+	{
+		return (-b-sqrt(discriminant)) /(2.0f*a);			// tmin=-b-sqrt(b*b-4*a*c) / 2*a
+	}
+								
 }
+
+// Adding Surface Normal to color function; 
+// Normal is calculated as unit vector in the direction of the hitpoint minus the center; P-C 
 
 Vec3 color(const Ray& r)
 {
-	if (hit_sphere(Vec3{ 0.0f, 0.0f, -1.0f }, 0.5f, r))		// creating red sphere with a radius of 0.55
-		return Vec3{ 1.0f, 0.0f, 0.0f };					// return color red
-	Vec3 unit_direction = unit_vector(r.direction());
-	float t = 0.5f * (unit_direction.y() + 1.0f);
+	float t = hit_sphere(Vec3{ 0.0f, 0.0f, -1.0f }, 0.5f, r);
+	if (t > 0) {
+		Vec3 N = unit_vector(r.point_at_parameter(t) - Vec3{ 0.0f, 0.0f, -1.0f });				// Surface Normal is a unit length vector = unit_vector(P-C); 
+		return 0.5* Vec3{ N.x() + 1, N.y() + 1, N.z() + 1 };									// Since N is a unit vector each component is between -1 and 1
+	}																						    // Map each component to interval from 0 to 1 and then map x,y,z to r,g,b 
+	Vec3 unit_direction = unit_vector(r.direction());											
+	t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 }
 
