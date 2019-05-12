@@ -75,6 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -107,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +158,10 @@
     <ClCompile Include="RayTracing_OneWeekend.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hitable.hpp" />
+    <ClInclude Include="hitable_list.hpp" />
     <ClInclude Include="Ray.hpp" />
+    <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="vec3.hpp" />
   </ItemGroup>
   <ItemGroup>

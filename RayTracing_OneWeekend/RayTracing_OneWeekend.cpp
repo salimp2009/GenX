@@ -2,6 +2,9 @@
 #include <string>
 #include <fstream>
 #include "Ray.hpp"
+#include "hitable_list.hpp"
+#include "Sphere.hpp"
+#include "float.h"
 
 // Ray Tracer Project from "RayTracing Over a Weekend" by Peter Shirley
 // Sample PPM color chart from "RayTracing Over a Weekend" by Peter Shirley
@@ -84,15 +87,16 @@ float hit_sphere(const Vec3& center, float radius, const Ray& r)
 // Adding Surface Normal to color function; 
 // Normal is calculated as unit vector in the direction of the hitpoint minus the center; P-C 
 
-Vec3 color(const Ray& r)
+Vec3 color(const Ray& r, Hitable *world)
 {
-	float t = hit_sphere(Vec3{ 0.0f, 0.0f, -1.0f }, 0.5f, r);
-	if (t > 0) {
-		Vec3 N = unit_vector(r.point_at_parameter(t) - Vec3{ 0.0f, 0.0f, -1.0f });				// Surface Normal is a unit length vector = unit_vector(P-C); 
-		return 0.5* Vec3{ N.x() + 1, N.y() + 1, N.z() + 1 };									// Since N is a unit vector each component is between -1 and 1
-	}																						    // Map each component to interval from 0 to 1 and then map x,y,z to r,g,b 
+	hit_record rec;
+	if(world->hit(r, 0.0f, FLT_MAX, rec)) 
+	{
+		return 0.5f* Vec3(rec.normal.x() + 1.0f, rec.normal.y()+1.0f, rec.normal.z()+1.0f);
+	}
+																						   
 	Vec3 unit_direction = unit_vector(r.direction());											
-	t = 0.5f * (unit_direction.y() + 1.0f);
+	float t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 }
 
@@ -102,35 +106,49 @@ int main()
 	//ppm_test();
 
 	// testing ray class; graphic output as PPM file
-	std::string file {"rayexample.ppm"};
+	std::string file{ "rayexample.ppm" };
 	std::ofstream ost(file);
-	
-	int nx{200};
-	int ny{100};
-	ost<<"P3\n"<<nx<<" "<<ny<<"\n255\n";
+
+	int nx{ 200 };
+	int ny{ 100 };
+	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	Vec3 lower_left_corner{ -2.0f, -1.0f, -1.0f };
 	Vec3 horizontal{ 4.0f, 0.0f, 0.0f };
 	Vec3 vertical{ 0.0f, 2.0f, 0.0f };
 	Vec3 origin{ 0.0f, 0.0f, 0.0f };
+	Hitable* list[3];
+	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f);
+	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f);
+	Hitable * world = new Hitable_list(list, 2);
 
-	for(int j=ny-1; j>=0; --j)  
+	for (int j = ny - 1; j >= 0; --j)
 	{
-	    for(int i=0; i<nx; ++i) 
+		for (int i = 0; i < nx; ++i)
 		{
-	        float u=float(i) / float(nx);
-	        float v=float(j) / float(ny);
+			float u = float(i) / float(nx);
+			float v = float(j) / float(ny);
 			Ray r{ origin, lower_left_corner + u * horizontal + v * vertical };
-			Vec3 col = color(r);
-			
-			int ir=int(255.99*col[0]);
-	        int ig=int(255.99*col[1]);
-	        int ib=int(255.99*col[2]);
 
-	     //   std::cout<<ir<<" "<<ig<<" "<<ib<<'\n';
-	        ost<<ir<<" "<<ig<<" "<<ib<<"\n";
-	    }
+			Vec3 p = r.point_at_parameter(2.0f);
+			Vec3 col = color(r, world);
+
+			int ir = int(255.99 * col[0]);
+			int ig = int(255.99 * col[1]);
+			int ib = int(255.99 * col[2]);
+
+			//   std::cout<<ir<<" "<<ig<<" "<<ib<<'\n';
+			ost << ir << " " << ig << " " << ib << "\n";
+		}
 	}
 	ost.close();
+
+
+	delete list[0];
+	delete list[1];
+	
+	world = nullptr;
+	delete world;
+
 	return 0;
 }
 
