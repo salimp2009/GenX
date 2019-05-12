@@ -116,7 +116,7 @@ int main()
 	Vec3 horizontal{ 4.0f, 0.0f, 0.0f };
 	Vec3 vertical{ 0.0f, 2.0f, 0.0f };
 	Vec3 origin{ 0.0f, 0.0f, 0.0f };
-	Hitable* list[3];
+	Hitable* list[2];
 	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f);
 	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f);
 	Hitable * world = new Hitable_list(list, 2);
