@@ -32,7 +32,7 @@ bool Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
 			rec.normal = (rec.p - center) / radius;
 			return true;
 		}
-		temp= (-b - sqrt(b * b + a * c)) / a;			// second real root; tmax
+		temp= (-b + sqrt(b * b - a * c)) / a;			// second real root; tmax
 		if (temp<t_max && temp>t_min)
 		{
 			rec.t = temp;

@@ -5,7 +5,7 @@
 
 struct  hit_record 
 {
-	float t{ 0 };
+	float t{ 0.0f };
 	Vec3 p;
 	Vec3 normal;
 };
