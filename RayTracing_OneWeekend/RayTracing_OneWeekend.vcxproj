@@ -158,6 +158,7 @@
     <ClCompile Include="RayTracing_OneWeekend.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Hitable.hpp" />
     <ClInclude Include="hitable_list.hpp" />
     <ClInclude Include="Ray.hpp" />

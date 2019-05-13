@@ -5,6 +5,8 @@
 #include "hitable_list.hpp"
 #include "Sphere.hpp"
 #include "float.h"
+#include "Camera.hpp"
+#include <random>
 
 // Ray Tracer Project from "RayTracing Over a Weekend" by Peter Shirley
 // Sample PPM color chart from "RayTracing Over a Weekend" by Peter Shirley
@@ -111,26 +113,36 @@ int main()
 
 	int nx{ 200 };
 	int ny{ 100 };
+	int ns{ 100 };
+	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
-	Vec3 lower_left_corner{ -2.0f, -1.0f, -1.0f };
-	Vec3 horizontal{ 4.0f, 0.0f, 0.0f };
-	Vec3 vertical{ 0.0f, 2.0f, 0.0f };
-	Vec3 origin{ 0.0f, 0.0f, 0.0f };
+	
 	Hitable* list[2];
 	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f);
 	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f);
 	Hitable * world = new Hitable_list(list, 2);
+	Camera cam;
+
+	// Random number generation to be used for antialiasing; 
+	// drand48() was used for random numbers in the original text but Windows did not support; works in Mac and Unix
+	std::random_device rd;									// will be used to obtain a seed for random number engine
+	std::mt19937 gen(rd());									// Mersenne_twister_engine seeded with rd()	; 				
+	std::uniform_real_distribution<>dis(0.0f, 1.0f);		// uniform distribution between 0<= x <1
 
 	for (int j = ny - 1; j >= 0; --j)
 	{
 		for (int i = 0; i < nx; ++i)
 		{
-			float u = float(i) / float(nx);
-			float v = float(j) / float(ny);
-			Ray r{ origin, lower_left_corner + u * horizontal + v * vertical };
-
-			Vec3 p = r.point_at_parameter(2.0f);
-			Vec3 col = color(r, world);
+			Vec3 col(0.0f, 0.0f, 0.0f);
+			for(std::size_t s{0}; s<ns; ++s)					// send several(ns) random rays within each pixel 
+			{
+				float u = float(i+dis(gen)) / float(nx);	    // dis(gen); random uniform distribution of floating numbers; 
+				float v = float(j+dis(gen)) / float(ny);		// between 1 and 0 gen() is the Mersenne twister engine for random number
+				Ray r = cam.get_ray(u, v);						// send rays to get a sample within that pixel
+				Vec3 p = r.point_at_parameter(2.0f);
+				col += color(r, world);							// get the color if there is any hit
+			}
+			col  /= float(ns);									// use tge average of sample colors for a more smooth edge coloring; antialiasing
 
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
