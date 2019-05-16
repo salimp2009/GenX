@@ -8,7 +8,7 @@ Vec3 random_in_unit_sphere()
 {
 	std::random_device rd;									// will be used to obtain a seed for random number engine
 	std::mt19937 gen(rd());									// mersenne_twister_engine seeded with rd()	; 				
-	std::uniform_real_distribution<>dis(0.0f, 1.0f);
+	std::uniform_real_distribution<float>dis(0.0f, 1.0f);
 	Vec3 p;
 	do {
 		p = 2.0f * Vec3(dis(gen), dis(gen), dis(gen)) - Vec3(1.0f, 1.0f, 1.0f);

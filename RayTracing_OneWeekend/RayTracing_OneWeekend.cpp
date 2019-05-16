@@ -145,7 +145,7 @@ int main()
 	// drand48() was used for random numbers in the original text but Windows did not support; works in Mac and Unix
 	std::random_device rd;									// will be used to obtain a seed for random number engine
 	std::mt19937 gen(rd());									// Mersenne_twister_engine seeded with rd()	; 				
-	std::uniform_real_distribution<>dis(0.0f, 1.0f);		// uniform distribution between 0<= x <1
+	std::uniform_real_distribution<float>dis(0.0f, 1.0f);		// uniform distribution between 0<= x <1
 
 	for (int j = ny - 1; j >= 0; --j)
 	{
