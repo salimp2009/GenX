@@ -3,11 +3,14 @@
 #define HITABLE_H
 #include "Ray.hpp"
 
+class Material;
+
 struct  hit_record 
 {
 	float t{ 0.0f };
 	Vec3 p;
 	Vec3 normal;
+	Material* mat_ptr;
 };
 
 class Hitable

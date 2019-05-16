@@ -6,6 +6,7 @@
 #include "Sphere.hpp"
 #include "float.h"
 #include "Camera.hpp"
+#include "Material.hpp"
 #include <random>
 
 // Ray Tracer Project from "RayTracing Over a Weekend" by Peter Shirley
@@ -87,28 +88,25 @@
 //								
 //}
 
-Vec3 random_in_unit_sphere()
-{
-	std::random_device rd;									// will be used to obtain a seed for random number engine
-	std::mt19937 gen(rd());									// mersenne_twister_engine seeded with rd()	; 				
-	std::uniform_real_distribution<>dis(0.0f, 1.0f);
-	Vec3 p;
-	do {
-		p = 2.0f * Vec3(dis(gen), dis(gen), dis(gen)) - Vec3(1.0f, 1.0f, 1.0f);
-	} while (p.squared_length() >= 1.0f);
-	return p;
-}
-
 
 // Adding Surface Normal to color function; 
 // Normal is calculated as unit vector in the direction of the hitpoint minus the center; P-C 
-Vec3 color(const Ray& r, Hitable *world)
+Vec3 color(const Ray& r, Hitable *world, int depth)
 {
 	hit_record rec;
 	if(world->hit(r, 0.001f, FLT_MAX, rec)) 
 	{
-		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-		return 0.5f*color(Ray(rec.p, target-rec.p), world);
+		Ray scattered;
+		Vec3 attenuation;
+		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+		{
+			return attenuation * color(scattered, world, depth + 1);
+		}
+		else
+		{
+			return Vec3{ 0.0f, 0.0f, 0.0f };
+		}
+		
 	}
 	else
 	{
@@ -129,16 +127,18 @@ int main()
 	std::string file{ "rayexample.ppm" };
 	std::ofstream ost(file);
 
-	int nx{ 200 };
-	int ny{ 100 };
-	int ns{ 100 };
+	int nx{ 200 };			// canvas width; width of camera view area
+	int ny{ 100 };			// canvas height; height of camera view area
+	int ns{ 100 };			// number random rays for sampling colors in each pixel
 	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	
-	Hitable* list[2];
-	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f);
-	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f);
-	Hitable * world = new Hitable_list(list, 2);
+	Hitable* list[4];
+	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(Vec3{ 0.8f, 0.3f, 0.3f }));
+	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3{ 0.8f, 0.3f, 0.0f }));
+	list[2] = new Sphere(Vec3(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.6f, 0.2f }));
+	list[3] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.8f, 0.8f }));
+	Hitable * world = new Hitable_list(list, 4);
 	Camera cam;
 
 	// Random number generation to be used for antialiasing; 
@@ -158,7 +158,7 @@ int main()
 				float v = float(j+dis(gen)) / float(ny);		// between 1 and 0 gen() is the Mersenne twister engine for random number
 				Ray r = cam.get_ray(u, v);						// send rays to get a sample within that pixel
 				Vec3 p = r.point_at_parameter(2.0f);
-				col += color(r, world);							// get the color if there is any hit
+				col += color(r, world, 0);							// get the color if there is any hit
 			}
 			col  /= float(ns);									// use tge average of sample colors for a more smooth edge coloring; antialiasing
 			col = Vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));

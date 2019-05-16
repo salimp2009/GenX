@@ -2,17 +2,19 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 #include "Hitable.hpp"
+#include "Material.hpp"
 
 class Sphere:public Hitable
 {
 public:
 	
-	Sphere() :center{}, radius{ 0.0f } { }
-	Sphere(Vec3 cen, float r): center{cen}, radius{r} { }
-	~Sphere() { }
+	Sphere() :center{}, radius{ 0.0f }, mat_ptr{nullptr} { }
+	Sphere(Vec3 cen, float r, Material* m) : center{ cen }, radius{ r }, mat_ptr{ m } { }
+	~Sphere() { delete mat_ptr; }
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const override;
 	Vec3 center;
 	float radius;
+	Material* mat_ptr;
 };
 
 bool Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
@@ -30,6 +32,7 @@ bool Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);
 			rec.normal = (rec.p - center) / radius;
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 		temp= (-b + sqrt(b * b - a * c)) / a;			// second real root; tmax
@@ -38,6 +41,7 @@ bool Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);		// point at t
 			rec.normal = (rec.p - center) / radius;		// surface normal at hit point t
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 	}

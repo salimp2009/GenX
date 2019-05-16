@@ -110,6 +110,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <EnablePREfast>false</EnablePREfast>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,6 +163,7 @@
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Hitable.hpp" />
     <ClInclude Include="hitable_list.hpp" />
+    <ClInclude Include="Material.hpp" />
     <ClInclude Include="Ray.hpp" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="vec3.hpp" />
