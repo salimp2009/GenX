@@ -8,6 +8,7 @@
 #include "Camera.hpp"
 #include "Material.hpp"
 #include <random>
+#include <memory>
 
 // Ray Tracer Project from "RayTracing Over a Weekend" by Peter Shirley
 // Sample PPM color chart from "RayTracing Over a Weekend" by Peter Shirley
@@ -106,7 +107,7 @@ Vec3 color(const Ray& r, Hitable *world, int depth)
 		{
 			return Vec3{ 0.0f, 0.0f, 0.0f };
 		}
-		
+
 	}
 	else
 	{
@@ -114,8 +115,6 @@ Vec3 color(const Ray& r, Hitable *world, int depth)
 		float t = 0.5f * (unit_direction.y() + 1.0f);
 		return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 	}
-																						   
-	
 }
 
 int main()
@@ -133,12 +132,16 @@ int main()
 	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	
-	Hitable* list[4];
-	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(Vec3{ 0.8f, 0.3f, 0.3f }));
-	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3{ 0.8f, 0.3f, 0.0f }));
-	list[2] = new Sphere(Vec3(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.6f, 0.2f }, 1.0f));
-	list[3] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.8f, 0.8f }, 0.3f));
-	Hitable * world = new Hitable_list(list, 4);
+
+	Hitable* list[5];
+	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(Vec3{ 0.1f, 0.2f, 0.5f }));
+	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3{ 0.8f, 0.8f, 0.0f }));
+	list[2] = new Sphere(Vec3(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.6f, 0.2f}, 0.0f));
+	//list[3] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3{ 0.8f, 0.8f, 0.8f }, 0.3f));
+	list[3] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.5f, new dielectric(1.5f));
+	list[4] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), -0.45f, new dielectric(1.5f));
+	
+	Hitable * world = new Hitable_list(list, 5);
 	Camera cam;
 
 	// Random number generation to be used for antialiasing; 
