@@ -142,7 +142,7 @@ int main()
 	list[4] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), -0.45f, new dielectric(1.5f));
 	
 	Hitable * world = new Hitable_list(list, 5);
-	Camera cam;
+	Camera cam{ Vec3{-2.0f, 2.0f, 1.0f}, Vec3{0.0f, 0.0f, -1.0f}, Vec3{0.0f, 1.0f, 0.0f}, 40.0f, float(nx)/float(ny) };
 
 	// Random number generation to be used for antialiasing; 
 	// drand48() was used for random numbers in the original text but Windows did not support; works in Mac and Unix
@@ -180,6 +180,7 @@ int main()
 	delete list[1];
 	delete list[2];
 	delete list[3];
+	delete list[4];
 	
 	world = nullptr;
 	delete world;
