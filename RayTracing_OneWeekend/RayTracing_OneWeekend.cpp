@@ -8,6 +8,7 @@
 #include "Camera.hpp"
 #include "Material.hpp"
 #include <random>
+
 //#include <memory>
 
 // Ray Tracer Project from "RayTracing Over a Weekend" by Peter Shirley
@@ -117,6 +118,47 @@ Vec3 color(const Ray& r, Hitable *world, int depth)
 	}
 }
 
+Hitable* random_scene()
+{
+	std::random_device rd;									// will be used to obtain a seed for random number engine
+	std::mt19937 gen(rd());									// Mersenne_twister_engine seeded with rd()	; 				
+	std::uniform_real_distribution<float>dis(0.0f, 1.0f);	// uniform distribution between 0<= x <1
+
+	constexpr int n{500};
+	Hitable** list = new Hitable*[n+1]; 
+	list[0] = new Sphere{ Vec3{0.0f, -1000.0f, 0.0f}, 1000, new Lambertian{Vec3{0.5f, 0.5f, 0.5f} } };
+	int i{1};
+	for (int a{-11}; a < 11; ++a) 
+	{
+		for (int b{-11}; b < 11; ++b)
+		{
+			float choose_mat = dis(gen);
+			Vec3 center{ a + dis(gen), 0.2f, b + 0.9f * dis(gen) };
+			if ((center - Vec3{ 4.0f, 0.2f, 0.0f }).length() > 0.9f)
+			{
+				if (choose_mat < 0.8f)			// diffuse material
+				{
+					list[i++] = new Sphere{ center, 0.2f, new Lambertian{Vec3{dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen)}} };
+				}
+				else if (choose_mat < 0.95f)	// metal material
+				{
+					list[i++] = new Sphere{ center, 0.2f, 
+						new Metal{Vec3{0.5f*(1.0f+ dis(gen)), 0.5f*(1.0f + dis(gen)),  0.5f*(1.0f + dis(gen))}, 0.5f*dis(gen)} };
+				}
+				else							// glass material	
+				{
+					list[i++] = new Sphere{ center, 0.2f, new dielectric{1.5f} };
+				}	
+			}
+		}
+	}
+	list[i++] = new Sphere{ Vec3{0.0f, 1.0f, 0.0f}, 1.0f, new dielectric{1.5f} };
+	list[i++] = new Sphere{ Vec3{-4.0f, 1.0f, 0.0f}, 1.0f, new Lambertian{Vec3{0.4f, 0.2f, 0.1f}} };
+	list[i++] = new Sphere{ Vec3{4.0f, 1.0f, 0.0f}, 1.0f, new Metal{Vec3{0.7f, 0.6f, 0.5f}, 0.0f} };
+
+	return new Hitable_list(list, i);
+}
+
 int main()
 {
 	//vec3_test();
@@ -126,13 +168,12 @@ int main()
 	std::string file{ "rayexample.ppm" };
 	std::ofstream ost(file);
 
-	int nx{ 200 };			// canvas width; width of camera view area
-	int ny{ 100 };			// canvas height; height of camera view area
-	int ns{ 100 };			// number random rays for sampling colors in each pixel
+	int nx{1200};			// canvas width; width of camera view area
+	int ny{800};			// canvas height; height of camera view area
+	int ns{50};				// number random rays for sampling colors in each pixel
 	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	
-
 	Hitable* list[5];
 	list[0] = new Sphere(Vec3(0.0f, 0.0f, -1.0f), 0.5f, new Lambertian(Vec3{ 0.1f, 0.2f, 0.5f }));
 	list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3{ 0.8f, 0.8f, 0.0f }));
@@ -141,12 +182,13 @@ int main()
 	list[3] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.5f, new dielectric(1.5f));
 	list[4] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), -0.45f, new dielectric(1.5f));
 	
-	Hitable * world = new Hitable_list(list, 5);
-
-	Vec3 lookfrom{ 3.0f, 3.0f, 2.0f };
-	Vec3 lookat{ 0.0f, 0.0f ,-1.0f };
-	float dist_to_focus = (lookfrom - lookat).length();
-	float aperture = 2.0f;
+	Hitable *world = new Hitable_list(list, 5);
+	world = random_scene();
+ 
+	Vec3 lookfrom{13.0f, 2.0f, 3.0f};
+	Vec3 lookat{0.0f, 0.0f ,0.0f};
+	float dist_to_focus = 10.0f;						//(lookfrom - lookat).length();
+	float aperture = 0.1f;
 
 	Camera cam{lookfrom , lookat, Vec3{0.0f, 1.0f, 0.0f}, 20.0f, float(nx)/float(ny), aperture, dist_to_focus };
 
@@ -161,7 +203,7 @@ int main()
 		for (int i = 0; i < nx; ++i)
 		{
 			Vec3 col(0.0f, 0.0f, 0.0f);
-			for(std::size_t s{0}; s<ns; ++s)					// send several(ns) random rays within each pixel 
+			for(int s{0}; s<ns; ++s)					// send several(ns) random rays within each pixel 
 			{
 				float u = float(i+dis(gen)) / float(nx);	    // dis(gen); random uniform distribution of floating numbers; 
 				float v = float(j+dis(gen)) / float(ny);		// between 1 and 0 gen() is the Mersenne twister engine for random number
@@ -182,14 +224,14 @@ int main()
 	ost.close();
 
 
-	delete list[0];
-	delete list[1];
-	delete list[2];
-	delete list[3];
-	delete list[4];
+	//delete list[0];
+	//delete list[1];
+	//delete list[2];
+	//delete list[3];
+	//delete list[4];
 	
-	world = nullptr;
-	delete world;
+	//world = nullptr;
+	delete [] world;
 
 	return 0;
 }
