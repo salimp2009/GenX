@@ -170,7 +170,7 @@ int main()
 
 	int nx{1200};			// canvas width; width of camera view area
 	int ny{800};			// canvas height; height of camera view area
-	int ns{50};				// number random rays for sampling colors in each pixel
+	int ns{80};				// number random rays for sampling colors in each pixel
 	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	
