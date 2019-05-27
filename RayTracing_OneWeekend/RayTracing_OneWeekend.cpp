@@ -124,26 +124,25 @@ Hitable* random_scene()
 	std::mt19937 gen(rd());									// Mersenne_twister_engine seeded with rd()	; 				
 	std::uniform_real_distribution<float>dis(0.0f, 1.0f);	// uniform distribution between 0<= x <1
 
-	constexpr int n{500};
+	constexpr int n{5000};
 	Hitable** list = new Hitable*[n+1]; 
 	list[0] = new Sphere{ Vec3{0.0f, -1000.0f, 0.0f}, 1000, new Lambertian{Vec3{0.5f, 0.5f, 0.5f} } };
 	int i{1};
-	for (int a{-11}; a < 11; ++a) 
+	for (int a{-10}; a < 10; ++a) 
 	{
-		for (int b{-11}; b < 11; ++b)
+		for (int b{-10}; b < 10; ++b)
 		{
 			float choose_mat = dis(gen);
-			Vec3 center{ a + dis(gen), 0.2f, b + 0.9f * dis(gen) };
+			Vec3 center{ a +0.9f * dis(gen), 0.2f, b + 0.9f * dis(gen) };
 			if ((center - Vec3{ 4.0f, 0.2f, 0.0f }).length() > 0.9f)
 			{
 				if (choose_mat < 0.8f)			// diffuse material
 				{
-					list[i++] = new Sphere{ center, 0.2f, new Lambertian{Vec3{dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen)}} };
+					list[i++] = new Moving_Sphere{ center, center + Vec3{0.0f, 0.5f*dis(gen), 0.0f}, 0.0f, 1.0f, 0.2f, new Lambertian{Vec3{dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)}} };
 				}
 				else if (choose_mat < 0.95f)	// metal material
 				{
-					list[i++] = new Sphere{ center, 0.2f, 
-						new Metal{Vec3{0.5f*(1.0f+ dis(gen)), 0.5f*(1.0f + dis(gen)),  0.5f*(1.0f + dis(gen))}, 0.5f*dis(gen)} };
+					list[i++] = new Sphere{ center, 0.2f, new Metal{Vec3{0.5f*(1.0f+ dis(gen)), 0.5f*(1.0f + dis(gen)),  0.5f*(1.0f + dis(gen))}, 0.5f*dis(gen)} };
 				}
 				else							// glass material	
 				{
@@ -188,9 +187,9 @@ int main()
 	Vec3 lookfrom{13.0f, 2.0f, 3.0f};
 	Vec3 lookat{0.0f, 0.0f ,0.0f};
 	float dist_to_focus = 10.0f;						//(lookfrom - lookat).length();
-	float aperture = 0.1f;
+	float aperture = 0.0f;
 
-	Camera cam{lookfrom , lookat, Vec3{0.0f, 1.0f, 0.0f}, 20.0f, float(nx)/float(ny), aperture, dist_to_focus };
+	Camera cam{lookfrom , lookat, Vec3{0.0f, 1.0f, 0.0f}, 20.0f, float(nx)/float(ny), aperture, dist_to_focus, 0.0f, 1.0f };
 
 	// Random number generation to be used for antialiasing; 
 	// drand48() was used for random numbers in the original text but Windows did not support; works in Mac and Unix

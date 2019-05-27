@@ -58,7 +58,7 @@ public:
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const override
 	{
 		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-		scattered = Ray(rec.p, target - rec.p);
+		scattered = Ray(rec.p, target - rec.p, r_in.time());
 		attenuation = albedo;
 		return true;
 	}
