@@ -15,7 +15,7 @@ public:
 
 	Vec3(float e0, float e1, float e2) : e{ e0, e1, e2 } { }
 //	Vec3(float e0, float e1, float e2){ e[0]={e0}; e[1]={e1}; e[2]={e2};}  // original way in the code to initialize
-	~Vec3() = default;
+//	~Vec3() = default;
 
 	inline float x() const { return e[0]; }
 	inline float y() const { return e[1]; }
@@ -45,7 +45,8 @@ public:
 	inline void make_unit_vector();
 
 	// public data member; x,y,z coordinates
-	float e[3];                                // better to use float x, y, z instead of e[3] array																	// or std::array<float,3>e;
+	float e[3];                                // better to use float x, y, z instead of e[3] array																	
+											   // or std::array<float,3>e;
 };
 
 inline std::istream& operator>>(std::istream& is, Vec3& t) {

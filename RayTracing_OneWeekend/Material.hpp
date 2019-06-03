@@ -49,6 +49,7 @@ class Material
 {
 public:
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const = 0;
+	virtual ~Material() = default;
 };
 
 class Lambertian: public Material
@@ -58,7 +59,7 @@ public:
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const override
 	{
 		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-		scattered = Ray(rec.p, target - rec.p, r_in.time());
+		scattered = Ray{ rec.p, target - rec.p, r_in.time() };
 		attenuation = albedo;
 		return true;
 	}
@@ -79,7 +80,7 @@ public:
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const override
 	{
 		Vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-		scattered = Ray(rec.p, reflected + fuzz*random_in_unit_sphere());
+		scattered = Ray{ rec.p, reflected + fuzz * random_in_unit_sphere(), r_in.time() }; // added r_in.timr(); forgotten in the original code
 		attenuation = albedo;
 		return (dot(scattered.direction(), rec.normal) > 0);
 	}
@@ -129,11 +130,11 @@ public:
 		}
 		if (dis(gen)<reflect_prob)
 		{
-			scattered = Ray{ rec.p, reflected };
+			scattered = Ray{ rec.p, reflected, r_in.time() }; // added r_in.timr(); forgotten in the original code	
 		}
 		else
 		{
-			scattered = Ray{ rec.p, refracted };
+			scattered = Ray{ rec.p, refracted, r_in.time() };   // added r_in.timr(); forgotten in the original code
 		}
 		return true;
 	}

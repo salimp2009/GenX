@@ -41,6 +41,15 @@
     <ClInclude Include="Material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="aabb.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_sphere.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bvh.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
