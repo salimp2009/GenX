@@ -4,6 +4,7 @@
 #include "Hitable.hpp"
 #include <random>
 #include <cmath>
+#include "texture.hpp"
 
 Vec3 random_in_unit_sphere()
 {
@@ -55,16 +56,16 @@ public:
 class Lambertian: public Material
 {
 public:
-	Lambertian(const Vec3& a):albedo{a} { }
+	Lambertian() = default;
+	Lambertian(Texture* a):albedo{a} { }
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const override
 	{
 		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
 		scattered = Ray{ rec.p, target - rec.p, r_in.time() };
-		attenuation = albedo;
+		attenuation = albedo->value(0.0f, 0.0f, rec.p);
 		return true;
 	}
-	
-	Vec3 albedo;
+	Texture* albedo;
 };
 
 class Metal: public Material

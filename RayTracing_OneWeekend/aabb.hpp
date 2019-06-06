@@ -75,11 +75,11 @@ inline bool aabb::hit_alt(const Ray& r, float tmin, float tmax) const
 		float invD = 1.0f / r.direction()[a];
 		float t0 = (_min[a] - r.origin()[a]) * invD;   
 		float t1 = (_max[a] - r.origin()[a]) * invD;
-		if (invD < 0.0f)						// if the ray is travelling in the negative t0 and t1 will reversed			
+		if (invD < 0.0f)								// if the ray is travelling in the negative t0 and t1 will reversed			
 			std::swap(t0, t1);
 		tmin = t0 > tmin ? t0 : tmin;			
 		tmax = t1 < tmax ? t1 : tmax;
-		if (tmax <= tmin)					  // the ray does not hit the box
+		if (tmax <= tmin)								// the ray does not hit the box
 			return false;
 	}
 	return true;

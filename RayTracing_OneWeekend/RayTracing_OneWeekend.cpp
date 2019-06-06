@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "Material.hpp"
 #include <random>
+#include "bvh.hpp"
 
 //#include <memory>
 
@@ -101,7 +102,8 @@ Hitable* random_scene()
 
 	constexpr int n{5000};
 	Hitable** list = new Hitable*[n+1]; 
-	list[0] = new Sphere{ Vec3{0.0f, -1000.0f, 0.0f}, 1000, new Lambertian{Vec3{0.5f, 0.5f, 0.5f} } };
+	Texture* checker = new Checker_Texture{ new Constant_Texture{Vec3{0.2f, 0.3f, 0.1f}}, new Constant_Texture{Vec3{0.9f, 0.9f, 0.9f}} };
+	list[0] = new Sphere{ Vec3{0.0f, -1000.0f, 0.0f}, 1000, new Lambertian{checker} };
 	int i{1};
 	for (int a{-10}; a < 10; ++a) 
 	{
@@ -114,7 +116,7 @@ Hitable* random_scene()
 				if (choose_mat < 0.8f)			// diffuse material
 				{
 
-					list[i++] = new Moving_Sphere{ center, center + Vec3{0.0f, 0.5f*dis(gen), 0.0f}, 0.0f, 1.0f, 0.2f, new Lambertian{Vec3{dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)}} };
+					list[i++] = new Moving_Sphere{ center, center + Vec3{0.0f, 0.5f * dis(gen), 0.0f}, 0.0f, 1.0f, 0.2f, new Lambertian{new Constant_Texture{Vec3{dis(gen) * dis(gen), dis(gen) * dis(gen), dis(gen) * dis(gen)}}} };
 				}
 				else if (choose_mat < 0.95f)	// metal material
 				{
@@ -128,10 +130,11 @@ Hitable* random_scene()
 		}
 	}
 	list[i++] = new Sphere{ Vec3{0.0f, 1.0f, 0.0f}, 1.0f, new dielectric{1.5f} };
-	list[i++] = new Sphere{ Vec3{-4.0f, 1.0f, 0.0f}, 1.0f, new Lambertian{Vec3{0.4f, 0.2f, 0.1f}} };
+	list[i++] = new Sphere{ Vec3{-4.0f, 1.0f, 0.0f}, 1.0f, new Lambertian{new Constant_Texture{Vec3{0.4f, 0.2f, 0.1f}}} };
 	list[i++] = new Sphere{ Vec3{4.0f, 1.0f, 0.0f}, 1.0f, new Metal{Vec3{0.7f, 0.6f, 0.5f}, 0.0f} };
 
-	return new Hitable_list(list, i);
+	//return new Hitable_list(list, i);
+	return new bvh_node{ list, i, 0.0f, 1.0f };
 }
 
 int main()
@@ -164,8 +167,9 @@ int main()
 	Vec3 lookat{0.0f, 0.0f ,0.0f};
 	float dist_to_focus = 10.0f;						//(lookfrom - lookat).length();
 	float aperture = 0.0f;
+	float vfov = 20.0f;
 
-	Camera cam{lookfrom , lookat, Vec3{0.0f, 1.0f, 0.0f}, 20.0f, float(nx)/float(ny), aperture, dist_to_focus, 0.0f, 1.0f };
+	Camera cam{lookfrom , lookat, Vec3{0.0f, 1.0f, 0.0f}, vfov, float(nx)/float(ny), aperture, dist_to_focus, 0.0f, 1.0f };
 
 	// Random number generation to be used for antialiasing; 
 	// drand48() was used for random numbers in the original text but Windows did not support; works in Mac and Unix

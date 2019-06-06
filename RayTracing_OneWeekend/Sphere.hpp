@@ -20,9 +20,6 @@ public:
 	
 	Sphere() :center{}, radius{ 0.0f }, mat_ptr{nullptr} { }
 	Sphere(Vec3 cen, float r, Material* m) : center{ cen }, radius{ r }, mat_ptr{ m } { }
-	Sphere(const Sphere&) = default;
-	Sphere& operator=(const Sphere&) = default;
-	~Sphere() { delete mat_ptr; }
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const override;
 	virtual bool bounding_box(float t0, float t1, aabb& box) const override;
 	Vec3 center;

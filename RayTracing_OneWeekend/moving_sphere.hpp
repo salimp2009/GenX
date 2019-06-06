@@ -11,7 +11,7 @@ public:
 	Moving_Sphere() :center0{}, center1{}, time0{ 0.0f }, time1{ 0.0f }, radius{ 0.0f }, mat_ptr{ nullptr } { }
 	Moving_Sphere(Vec3 cen0, Vec3 cen1, float t0, float t1, float r, Material* m)
 		: center0{ cen0 }, center1{ cen1 }, time0{ t0 }, time1{ t1 }, radius{ r }, mat_ptr{ m } { }
-	~Moving_Sphere() { delete mat_ptr; }
+	//~Moving_Sphere() { delete mat_ptr; }
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const override;
 	virtual bool bounding_box(float t0, float t1, aabb& box) const override;
 	Vec3 center(float time) const;		// center of the sphere changes  with time 

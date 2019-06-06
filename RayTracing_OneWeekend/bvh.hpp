@@ -52,14 +52,9 @@ bool bvh_node::hit(const Ray& r, float t_min, float t_max, hit_record& rec) cons
 			return true;
 		}
 		else
-		{
 			return false;
-		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 int box_x_compare(const void* a, const void* b)
@@ -71,6 +66,7 @@ int box_x_compare(const void* a, const void* b)
 	{
 		std::cerr << "\nNo bounding box in bvh_node constructor\n";
 	}
+	//delete ah, bh;
 	if (box_left.min().x() - box_right.min().x()<0.0f)
 	{
 		return -1;
@@ -84,12 +80,13 @@ int box_x_compare(const void* a, const void* b)
 int box_y_compare(const void* a, const void* b)
 {
 	aabb box_left, box_right;
-	Hitable* ah = *(Hitable * *)a;
-	Hitable* bh = *(Hitable * *)b;
+	Hitable* ah = *(Hitable**)a;  
+	Hitable* bh = *(Hitable**)b;
 	if (!ah->bounding_box(0.0f, 0.0f, box_left) || !bh->bounding_box(0.0f, 0.0f, box_right))  // check whether there is a bounding box for an infinite plane that does not have a bounding box; not used here
 	{
 		std::cerr << "\nNo bounding box in bvh_node constructor\n";
 	}
+	//delete ah, bh;
 	if (box_left.min().y() - box_right.min().y() < 0.0f)
 	{
 		return -1;
@@ -98,7 +95,6 @@ int box_y_compare(const void* a, const void* b)
 	{
 		return 1;
 	}
-
 }
 
 int box_z_compare(const void* a, const void* b)
@@ -106,10 +102,12 @@ int box_z_compare(const void* a, const void* b)
 	aabb box_left, box_right;
 	Hitable* ah = *(Hitable * *)a;
 	Hitable* bh = *(Hitable * *)b;
+
 	if (!ah->bounding_box(0.0f, 0.0f, box_left) || !bh->bounding_box(0.0f, 0.0f, box_right))  // check whether there is a bounding box for an infinite plane that does not have a bounding box; not used here
 	{
 		std::cerr << "\nNo bounding box in bvh_node constructor\n";
 	}
+	//delete ah, bh;
 	if (box_left.min().z() - box_right.min().z() < 0.0f)
 	{
 		return -1;
