@@ -42,12 +42,12 @@ bool Moving_Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec)
 	Vec3 oc = r.origin() - center(r.time());			// A-C; A is the origin of the ray, C is the center of sphere
 	float a = dot(r.direction(), r.direction());		// dot(B, B); B=r.direction()
 	float b = dot(oc, r.direction());					// originally; 2* dot(B, A-C) in original formula but here it is dot(A-C, B) which are equal
-	float c = dot(oc, oc) - radius * radius;			// dot(A-C, A-C)-R*R; R is the radius
-	float discriminant = b * b - a * c;					// if the above hit_sphere equation will be solved for t; // discriminant has to be positive to have real roots
+	float c = dot(oc, oc) - radius*radius;			// dot(A-C, A-C)-R*R; R is the radius
+	float discriminant = b*b - a*c;					// if the above hit_sphere equation will be solved for t; // discriminant has to be positive to have real roots
 	if (discriminant > 0)								// if discriminant >0 there are two real roots; 
 	{
-		float temp = (-b - sqrt(b * b - a * c)) / a;	// first real root; tmin; closest hit point
-		if (temp<t_max && temp>t_min)
+		float temp = (-b - sqrt(discriminant)) / a;	// first real root; tmin; closest hit point
+		if (temp < t_max && temp > t_min)
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);
@@ -55,8 +55,8 @@ bool Moving_Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec)
 			rec.mat_ptr = mat_ptr;
 			return true;
 		}
-		temp = (-b + sqrt(b * b - a * c)) / a;						// second real root; tmax
-		if (temp<t_max && temp>t_min)
+		temp = (-b + sqrt(discriminant)) / a;						// second real root; tmax
+		if (temp < t_max && temp > t_min)
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);					// point at t
