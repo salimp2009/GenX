@@ -3,6 +3,8 @@
 #define BVH_H
 #include "Hitable.hpp"
 #include <random>
+//#include <stdlib.h>
+//#include <cstdlib>
 
 class bvh_node : public Hitable
 {
@@ -34,6 +36,7 @@ bool bvh_node::hit(const Ray& r, float t_min, float t_max, hit_record& rec) cons
 			if (left_rec.t < right_rec.t)
 			{
 				rec = left_rec;
+				return true;
 			}
 			else
 			{

@@ -7,13 +7,9 @@ class Hitable_list:public Hitable
 {
 public:
 	Hitable_list():list{nullptr},list_size{0} { }
-	Hitable_list(Hitable **l, int n):list{l}, list_size{n} { }
-	//Hitable_list(const Hitable_list&) = default;
-	//Hitable_list& operator=(const Hitable_list&) = default;
-	  
+	Hitable_list(Hitable **l, int n):list{l}, list_size{n} { } 
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const override;
 	virtual bool bounding_box(float t0, float t1, aabb& box) const override;
-	//~Hitable_list() { delete list; }
 	Hitable** list;
 	int list_size;
 };

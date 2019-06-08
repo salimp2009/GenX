@@ -115,7 +115,6 @@ Hitable* random_scene()
 			{
 				if (choose_mat < 0.8f)			// diffuse material
 				{
-
 					list[i++] = new Moving_Sphere{ center, center + Vec3{0.0f, 0.5f * dis(gen), 0.0f}, 0.0f, 1.0f, 0.2f, new Lambertian{new Constant_Texture{Vec3{dis(gen)*dis(gen), dis(gen)*dis(gen), dis(gen)*dis(gen)}}} };
 				}
 				else if (choose_mat < 0.95f)	// metal material
@@ -148,7 +147,7 @@ int main()
 
 	int nx{1200};			// canvas width; width of camera view area
 	int ny{800};			// canvas height; height of camera view area
-	int ns{100};				// number random rays for sampling colors in each pixel
+	int ns{100};			 // number random rays for sampling colors in each pixel
 	
 	ost << "P3\n" << nx << " " << ny << "\n255\n";
 	
